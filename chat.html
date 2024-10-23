@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Portal</title>
+    <link rel="stylesheet" href="chat-style.css">
+</head>
+<body>
+    
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Chat Portal</h2>
+            <div class="user-info">
+                <span id="userEmail"></span>
+                <button id="signOutButton">Sign Out</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="messageContainer">
+            
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type a message...">
+            <button id="sendButton">Send</button>
+        </div>
+    </div>
+
+     
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+      
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOXWWVHtNMM0EnHTYqsk7Sv8QCitcRQJs",
+  authDomain: "inventory-managment-2f71e.firebaseapp.com",
+  projectId: "inventory-managment-2f71e",
+  storageBucket: "inventory-managment-2f71e.appspot.com",
+  messagingSenderId: "407051604263",
+  appId: "1:407051604263:web:7110d658c799868cd51902",
+  measurementId: "G-8RWJWWKTHN"
+             
+        };
+
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+         
+        const messageContainer = document.getElementById('messageContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const signOutButton = document.getElementById('signOutButton');
+        const userEmail = document.getElementById('userEmail');
+
+        
+        // async function sendMessage(text) {
+        //     if (!text.trim()) return;
+
+        //     try {
+        //         await db.collection('messages').add({
+        //             text: text,
+        //             userId: auth.currentUser.uid,
+        //             userEmail: auth.currentUser.email,
+        //             timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        //         });
+        //         messageInput.value = '';
+        //         messageContainer.scrollTop = messageContainer.scrollHeight;
+        //     } catch (error) {
+        //         console.error('Error sending message:', error);
+        //     }
+        // }
+
+        
+async function sendMessage(text) {
+    if (!text.trim()) return;
+
+    const messageInput = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+
+    try {
+       
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+
+        await db.collection('messages').add({
+            text: text.trim(),
+            userId: auth.currentUser.uid,
+            userEmail: auth.currentUser.email,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+         
+        messageInput.value = '';
+        messageContainer.scrollTop = messageContainer.scrollHeight;
+
+    } catch (error) {
+         
+        alert('Error sending message: ' + error.message);
+        console.error('Error sending message:', error);
+
+    } finally {
+         
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        messageInput.focus();
+    }
+}
+
+        // Listen for messages
+        // function listenToMessages() {
+        //     db.collection('messages')
+        //         .orderBy('timestamp')
+        //         .onSnapshot((snapshot) => {
+        //             snapshot.docChanges().forEach((change) => {
+        //                 if (change.type === 'added') {
+        //                     const message = change.doc.data();
+        //                     const messageElement = document.createElement('div');
+        //                     messageElement.className = `message ${
+        //                         message.userId === auth.currentUser.uid ? 'sent' : 'received'
+        //                     }`;
+        //                     messageElement.innerHTML = `
+        //                         <span class="message-email">${message.userEmail}</span>
+        //                         <div class="message-text">${message.text}</div>
+        //                     `;
+        //                     messageContainer.appendChild(messageElement);
+        //                 }
+        //             });
+        //             messageContainer.scrollTop = messageContainer.scrollHeight;
+        //         });
+        // }
+
+        function listenToMessages() {
+    try {
+        db.collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot((snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const message = change.doc.data();
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${
+                            message.userId === auth.currentUser.uid ? 'sent' : 'received'
+                        }`;
+                        messageElement.innerHTML = `
+                            <span class="message-email">${message.userEmail}</span>
+                            <div class="message-text">${message.text}</div>
+                        `;
+                        messageContainer.appendChild(messageElement);
+                    }
+                });
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            }, (error) => {
+                console.error("Error listening to messages:", error);
+                alert("Error loading messages. Please refresh the page.");
+            });
+    } catch (error) {
+        console.error("Error setting up message listener:", error);
+        alert("Error connecting to chat. Please refresh the page.");
+    }
+}
+
+       
+        sendButton.addEventListener('click', () => {
+            sendMessage(messageInput.value);
+        });
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage(messageInput.value);
+            }
+        });
+
+        signOutButton.addEventListener('click', () => {
+            auth.signOut();
+        });
+
+         
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                userEmail.textContent = user.email;
+                listenToMessages();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

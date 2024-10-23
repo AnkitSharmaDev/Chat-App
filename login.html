@@ -1,0 +1,92 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Portal - Login</title>
+    <link rel="stylesheet" href="chat-style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Chat Portal</h2>
+            <div class="auth-form">
+                <input type="email" id="emailInput" placeholder="Email">
+                <input type="password" id="passwordInput" placeholder="Password">
+                <button id="loginButton">Login</button>
+                <button id="registerButton">Register</button>
+                <p id="errorText" class="error-text"></p>
+            </div>
+        </div>
+    </div>
+
+   
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script>
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDOXWWVHtNMM0EnHTYqsk7Sv8QCitcRQJs",
+  authDomain: "inventory-managment-2f71e.firebaseapp.com",
+  projectId: "inventory-managment-2f71e",
+  storageBucket: "inventory-managment-2f71e.appspot.com",
+  messagingSenderId: "407051604263",
+  appId: "1:407051604263:web:7110d658c799868cd51902",
+  measurementId: "G-8RWJWWKTHN"
+            
+        };
+
+         
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const loginButton = document.getElementById('loginButton');
+        const registerButton = document.getElementById('registerButton');
+        const errorText = document.getElementById('errorText');
+
+        
+        async function login(email, password) {
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                window.location.href = 'chat.html';
+            } catch (error) {
+                errorText.textContent = error.message;
+            }
+        }
+
+        
+        async function register(email, password) {
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                window.location.href = 'chat.html';
+            } catch (error) {
+                errorText.textContent = error.message;
+            }
+        }
+
+         
+        loginButton.addEventListener('click', () => {
+            login(emailInput.value, passwordInput.value);
+        });
+
+        registerButton.addEventListener('click', () => {
+            register(emailInput.value, passwordInput.value);
+        });
+
+         
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                window.location.href = 'chat.html';
+            }
+            else{
+                window.console='Not Authorised :(';
+            }
+        });
+    </script>
+</body>
+</html>
