@@ -284,6 +284,98 @@
                 gap: 0.5rem;
             }
         }
+
+        /* 
+         */
+
+         .confirm-dialog {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { 
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        to { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .confirm-content {
+        background: var(--chat-bg);
+        padding: 2rem;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 90%;
+        width: 400px;
+        border: 2px solid var(--primary-color);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    .confirm-content h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+
+    .confirm-content p {
+        margin-bottom: 1.5rem;
+        color: var(--text-color);
+    }
+
+    .confirm-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .confirm-buttons button {
+        min-width: 120px;
+    }
+
+    #confirmLeave {
+        background: #ff4757;
+    }
+
+    #confirmLeave:hover {
+        background: #ff6b81;
+    }
+
+    #cancelLeave {
+        background: #2f3542;
+    }
+
+    #cancelLeave:hover {
+        background: #57606f;
+    }
+
+    /* Added hover effect for the leave chat button */
+    #leaveChatButton {
+        background: #ff4757;
+        transition: all 0.3s ease;
+    }
+
+    #leaveChatButton:hover {
+        background: #ff6b81;
+        transform: translateY(-2px);
+    }
     </style>
 </head>
 <body>
@@ -299,6 +391,16 @@
             <div class="user-info">
                 <span id="userNameDisplay"></span>
                 <button id="leaveChatButton">Leave Chat</button>
+            </div>
+        </div>
+        <div id="confirmDialog" class="confirm-dialog" style="display: none;">
+            <div class="confirm-content">
+                <h3>❤️ Leaving So Soon? ❤️</h3>
+                <p>Are you sure you want to leave the chat?</p>
+                <div class="confirm-buttons">
+                    <button id="confirmLeave">Yes, Leave</button>
+                    <button id="cancelLeave">Stay</button>
+                </div>
             </div>
         </div>
         <div class="chat-messages" id="messageContainer"></div>
@@ -380,16 +482,61 @@
             }
         });
 
-        leaveChatButton.addEventListener('click', async () => {
-            // Send leave notification to Firebase
-            await db.collection('messages').add({
-                type: 'notification',
-                text: `${userName} left the chat 💔`,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
+        // leaveChatButton.addEventListener('click', async () => {
+        //     // Send leave notification to Firebase
+        //     await db.collection('messages').add({
+        //         type: 'notification',
+        //         text: `${userName} left the chat 💔`,
+        //         timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        //     });
             
-            window.location.reload();
+        //     window.location.reload();
+        // });
+
+          // Get the confirm dialog elements
+    const confirmDialog = document.getElementById('confirmDialog');
+    const confirmLeaveBtn = document.getElementById('confirmLeave');
+    const cancelLeaveBtn = document.getElementById('cancelLeave');
+
+    // Show confirm dialog when leave button is clicked
+    leaveChatButton.addEventListener('click', () => {
+        confirmDialog.style.display = 'flex';
+        createFloatingHeart(); // Create some hearts for effect
+    });
+
+    // Handle confirm leave
+    confirmLeaveBtn.addEventListener('click', async () => {
+        // Send leave notification to Firebase
+        await db.collection('messages').add({
+            type: 'notification',
+            text: `${userName} left the chat 💔`,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
+        
+        window.location.reload();
+    });
+
+    // Handle cancel leave
+    cancelLeaveBtn.addEventListener('click', () => {
+        confirmDialog.style.display = 'none';
+        // Create a heart for staying
+        createFloatingHeart();
+        createFloatingHeart();
+    });
+
+    // Close dialog if clicked outside
+    confirmDialog.addEventListener('click', (e) => {
+        if (e.target === confirmDialog) {
+            confirmDialog.style.display = 'none';
+        }
+    });
+
+    // Add escape key handler to close dialog
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && confirmDialog.style.display === 'flex') {
+            confirmDialog.style.display = 'none';
+        }
+    });
 
         async function sendMessage(text) {
             if (!text.trim()) return;
@@ -407,7 +554,7 @@
                 messageInput.value = '';
                 messageContainer.scrollTop = messageContainer.scrollHeight;
                 
-                // Create floating hearts when message is sent
+               
                 for(let i = 0; i < 3; i++) {
                     createFloatingHeart();
                 }
