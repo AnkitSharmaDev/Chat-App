@@ -1,169 +1,455 @@
-
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Portal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>  Chat ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff497e;
+            --secondary-color: #ff6b8c;
+            --background-color: #1a1a1a;
+            --chat-bg: #2d2d2d;
+            --sent-message-bg: #ff497e;
+            --received-message-bg: #3a3a3a;
+            --text-color: #ffffff;
+            --input-bg: #363636;
+            --header-bg: #363636;
+            --notification-bg: rgba(255, 73, 126, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @keyframes floatingHearts {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        @keyframes messagePopIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes glowing {
+            0% { box-shadow: 0 0 5px var(--primary-color); }
+            50% { box-shadow: 0 0 20px var(--primary-color); }
+            100% { box-shadow: 0 0 5px var(--primary-color); }
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 100% 100%, rgba(255,73,126,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 0% 0%, rgba(255,73,126,0.1) 0%, transparent 50%);
+        }
+
+        .floating-heart {
+            position: fixed;
+            font-size: 1.5rem;
+            animation: floatingHearts 3s ease-in-out infinite;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .name-input-container {
+            background: var(--chat-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            animation: messagePopIn 0.5s ease-out;
+        }
+
+        .name-input-container h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .chat-container {
+            background: var(--chat-bg);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            max-width: 1200px;
+            height: 90vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: var(--header-bg);
+            padding: 1rem 2rem;
+            color: var(--text-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .chat-header h2 {
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chat-header h2::before,
+        .chat-header h2::after {
+            content: "❤️";
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            background: var(--chat-bg);
+        }
+
+        .message {
+            max-width: 70%;
+            margin: 1rem 0;
+            padding: 1rem;
+            border-radius: 20px;
+            position: relative;
+            animation: messagePopIn 0.3s ease-out;
+        }
+
+        .message.sent {
+            background: var(--sent-message-bg);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received {
+            background: var(--received-message-bg);
+            color: var(--text-color);
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-notification {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: var(--notification-bg);
+            border-radius: 15px;
+            color: var(--primary-color);
+            animation: messagePopIn 0.3s ease-out;
+        }
+
+        .message::before {
+            content: "❤️";
+            position: absolute;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .message.sent::before {
+            right: -20px;
+            bottom: -10px;
+        }
+
+        .message.received::before {
+            left: -20px;
+            bottom: -10px;
+        }
+
+        .chat-input {
+            padding: 1rem;
+            background: var(--header-bg);
+            border-top: 2px solid var(--primary-color);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 25px;
+            font-size: 1rem;
+            background: var(--input-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            animation: glowing 1.5s infinite;
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #userNameDisplay {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
+                border-radius: 0;
+                width: 100%;
+            }
+            
+            .chat-messages {
+                height: calc(100vh - 140px);
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+            
+            .chat-header {
+                padding: 1rem;
+            }
+            
+            .chat-input {
+                padding: 0.8rem;
+            }
+            
+            .chat-input input {
+                padding: 10px 15px;
+            }
+            
+            button {
+                padding: 10px 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .message {
+                max-width: 90%;
+            }
+            
+            .chat-header h2 {
+                font-size: 1.2rem;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    
-    <div class="chat-container">
+    <div class="name-input-container" id="nameInputContainer">
+        <h2>❤️ Enter your name to join the chat ❤️</h2>
+        <input type="text" id="nameInput" placeholder="Your Name">
+        <button id="joinChatButton">Join Chat</button>
+    </div>
+
+    <div class="chat-container" id="chatContainer" style="display: none;">
         <div class="chat-header">
-            <h2>Chat Portal</h2>
+            <h2>   Chat</h2>
             <div class="user-info">
-                <span id="userEmail"></span>
-                <button id="signOutButton">Sign Out</button>
+                <span id="userNameDisplay"></span>
+                <button id="leaveChatButton">Leave Chat</button>
             </div>
         </div>
-        <div class="chat-messages" id="messageContainer">
-            
-        </div>
+        <div class="chat-messages" id="messageContainer"></div>
         <div class="chat-input">
             <input type="text" id="messageInput" placeholder="Type a message...">
             <button id="sendButton">Send</button>
         </div>
     </div>
 
-     
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <script>
-      
         const firebaseConfig = {
             apiKey: "AIzaSyDOXWWVHtNMM0EnHTYqsk7Sv8QCitcRQJs",
-  authDomain: "inventory-managment-2f71e.firebaseapp.com",
-  projectId: "inventory-managment-2f71e",
-  storageBucket: "inventory-managment-2f71e.appspot.com",
-  messagingSenderId: "407051604263",
-  appId: "1:407051604263:web:7110d658c799868cd51902",
-  measurementId: "G-8RWJWWKTHN"
-             
+            authDomain: "inventory-managment-2f71e.firebaseapp.com",
+            projectId: "inventory-managment-2f71e",
+            storageBucket: "inventory-managment-2f71e.appspot.com",
+            messagingSenderId: "407051604263",
+            appId: "1:407051604263:web:7110d658c799868cd51902",
+            measurementId: "G-8RWJWWKTHN"
         };
 
-        
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
         const db = firebase.firestore();
 
-         
+        const nameInputContainer = document.getElementById('nameInputContainer');
+        const nameInput = document.getElementById('nameInput');
+        const joinChatButton = document.getElementById('joinChatButton');
+        const chatContainer = document.getElementById('chatContainer');
+        const userNameDisplay = document.getElementById('userNameDisplay');
         const messageContainer = document.getElementById('messageContainer');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
-        const signOutButton = document.getElementById('signOutButton');
-        const userEmail = document.getElementById('userEmail');
+        const leaveChatButton = document.getElementById('leaveChatButton');
 
-        
-        // async function sendMessage(text) {
-        //     if (!text.trim()) return;
+        let userName = '';
 
-        //     try {
-        //         await db.collection('messages').add({
-        //             text: text,
-        //             userId: auth.currentUser.uid,
-        //             userEmail: auth.currentUser.email,
-        //             timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        //         });
-        //         messageInput.value = '';
-        //         messageContainer.scrollTop = messageContainer.scrollHeight;
-        //     } catch (error) {
-        //         console.error('Error sending message:', error);
-        //     }
-        // }
+        function createNotification(text) {
+            const notification = document.createElement('div');
+            notification.className = 'message-notification';
+            notification.textContent = text;
+            messageContainer.appendChild(notification);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
 
-        
-async function sendMessage(text) {
-    if (!text.trim()) return;
+        function createFloatingHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = '💗';
+            heart.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(heart);
+            
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+        }
 
-    const messageInput = document.getElementById('messageInput');
-    const sendButton = document.getElementById('sendButton');
+        async function displayChat() {
+            nameInputContainer.style.display = 'none';
+            chatContainer.style.display = 'flex';
+            userNameDisplay.textContent = userName;
+            
+            // Send join notification to Firebase
+            await db.collection('messages').add({
+                type: 'notification',
+                text: `${userName} joined the chat ❤️`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            listenToMessages();
+        }
 
-    try {
-       
-        messageInput.disabled = true;
-        sendButton.disabled = true;
-
-        await db.collection('messages').add({
-            text: text.trim(),
-            userId: auth.currentUser.uid,
-            userEmail: auth.currentUser.email,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        joinChatButton.addEventListener('click', () => {
+            userName = nameInput.value.trim();
+            if (userName) {
+                displayChat();
+            } else {
+                alert('Please enter a name to join the chat.');
+            }
         });
 
-         
-        messageInput.value = '';
-        messageContainer.scrollTop = messageContainer.scrollHeight;
+        leaveChatButton.addEventListener('click', async () => {
+            // Send leave notification to Firebase
+            await db.collection('messages').add({
+                type: 'notification',
+                text: `${userName} left the chat 💔`,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            window.location.reload();
+        });
 
-    } catch (error) {
-         
-        alert('Error sending message: ' + error.message);
-        console.error('Error sending message:', error);
+        async function sendMessage(text) {
+            if (!text.trim()) return;
 
-    } finally {
-         
-        messageInput.disabled = false;
-        sendButton.disabled = false;
-        messageInput.focus();
-    }
-}
+            messageInput.disabled = true;
+            sendButton.disabled = true;
 
-        // Listen for messages
-        // function listenToMessages() {
-        //     db.collection('messages')
-        //         .orderBy('timestamp')
-        //         .onSnapshot((snapshot) => {
-        //             snapshot.docChanges().forEach((change) => {
-        //                 if (change.type === 'added') {
-        //                     const message = change.doc.data();
-        //                     const messageElement = document.createElement('div');
-        //                     messageElement.className = `message ${
-        //                         message.userId === auth.currentUser.uid ? 'sent' : 'received'
-        //                     }`;
-        //                     messageElement.innerHTML = `
-        //                         <span class="message-email">${message.userEmail}</span>
-        //                         <div class="message-text">${message.text}</div>
-        //                     `;
-        //                     messageContainer.appendChild(messageElement);
-        //                 }
-        //             });
-        //             messageContainer.scrollTop = messageContainer.scrollHeight;
-        //         });
-        // }
+            try {
+                await db.collection('messages').add({
+                    text: text.trim(),
+                    userName: userName,
+                    type: 'message',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                messageInput.value = '';
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+                
+                // Create floating hearts when message is sent
+                for(let i = 0; i < 3; i++) {
+                    createFloatingHeart();
+                }
+            } catch (error) {
+                alert('Error sending message: ' + error.message);
+                console.error('Error sending message:', error);
+            } finally {
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                // messageInput.focus();
+            }
+        }
 
         function listenToMessages() {
-    try {
-        db.collection('messages')
-            .orderBy('timestamp')
-            .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === 'added') {
-                        const message = change.doc.data();
-                        const messageElement = document.createElement('div');
-                        messageElement.className = `message ${
-                            message.userId === auth.currentUser.uid ? 'sent' : 'received'
-                        }`;
-                        messageElement.innerHTML = `
-                            <span class="message-email">${message.userEmail}</span>
-                            <div class="message-text">${message.text}</div>
-                        `;
-                        messageContainer.appendChild(messageElement);
-                    }
+            db.collection('messages')
+                .orderBy('timestamp')
+                .onSnapshot((snapshot) => {
+                    messageContainer.innerHTML = '';
+                    snapshot.forEach((doc) => {
+                        const message = doc.data();
+                        
+                        if (message.type === 'notification') {
+                            createNotification(message.text);
+                        } else {
+                            const messageElement = document.createElement('div');
+                            messageElement.className = `message ${
+                                message.userName === userName ? 'sent' : 'received'
+                            }`;
+                            messageElement.innerHTML = `
+                                <span class="message-name">${message.userName}</span>
+                                <div class="message-text">${message.text}</div>
+                            `;
+                            messageContainer.appendChild(messageElement);
+                        }
+                    });
+                    messageContainer.scrollTop = messageContainer.scrollHeight;
                 });
-                messageContainer.scrollTop = messageContainer.scrollHeight;
-            }, (error) => {
-                console.error("Error listening to messages:", error);
-                alert("Error loading messages. Please refresh the page.");
-            });
-    } catch (error) {
-        console.error("Error setting up message listener:", error);
-        alert("Error connecting to chat. Please refresh the page.");
-    }
-}
+        }
 
-       
+        // Create periodic floating hearts
+        setInterval(createFloatingHeart, 5000);
+
         sendButton.addEventListener('click', () => {
             sendMessage(messageInput.value);
         });
@@ -174,19 +460,18 @@ async function sendMessage(text) {
             }
         });
 
-        signOutButton.addEventListener('click', () => {
-            auth.signOut();
-        });
-
-         
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                userEmail.textContent = user.email;
-                listenToMessages();
-            } else {
-                window.location.href = 'login.html';
+        // Handle name input with Enter key
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                userName = nameInput.value.trim();
+                if (userName) {
+                    displayChat();
+                } else {
+                    alert('Please enter a name to join the chat.');
+                }
             }
         });
     </script>
 </body>
 </html>
+ 
