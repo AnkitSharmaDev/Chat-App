@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>  Chat ❤️</title>
+    <title>  Chat ❤️
+
+    </title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -126,7 +128,7 @@
 
         .chat-header h2::before,
         .chat-header h2::after {
-            content: "❤️";
+            content: "";
             font-size: 1.2rem;
         }
 
@@ -170,7 +172,7 @@
         }
 
         .message::before {
-            content: "❤️";
+            content: "🧑";
             position: absolute;
             font-size: 0.8rem;
             opacity: 0.7;
@@ -376,11 +378,39 @@
         background: #ff6b81;
         transform: translateY(-2px);
     }
+    .Watermark{
+        display: flex;
+        justify-content: end;
+    }
+    footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px;
+    background: #111;
+    color: #fff;
+    font-size: 14px;
+}
+footer strong {
+    animation: sparkle 1.5s infinite alternate;
+}
+
+@keyframes sparkle {
+    0% { text-shadow: 0 0 5px #ff0, 0 0 10px #ff0; }
+    100% { text-shadow: 0 0 10px #ff0, 0 0 20px #ff0; }
+}
+
+
     </style>
 </head>
 <body>
     <div class="name-input-container" id="nameInputContainer">
-        <h2>❤️ Enter your name to join the chat ❤️</h2>
+        <h2> Enter your name to join the chat </h2>
         <input type="text" id="nameInput" placeholder="Your Name">
         <button id="joinChatButton">Join Chat</button>
     </div>
@@ -395,7 +425,7 @@
         </div>
         <div id="confirmDialog" class="confirm-dialog" style="display: none;">
             <div class="confirm-content">
-                <h3>❤️ Leaving So Soon? ❤️</h3>
+                <h3> Leaving So Soon? </h3>
                 <p>Are you sure you want to leave the chat?</p>
                 <div class="confirm-buttons">
                     <button id="confirmLeave">Yes, Leave</button>
@@ -409,9 +439,11 @@
             <button id="sendButton">Send</button>
         </div>
     </div>
-<!-- <footer style="text-align: center; padding: 10px; background: #111; color: #fff; font-size: 14px;">
-    <p>🚀 Crafted with ❤️ by <strong>Ankit Sharma</strong></p>
-</footer> -->
+    <div class="Watermark">
+<footer style="flex-direction: column; padding: 10px; background: #111; color: #fff; font-size: 14px;">
+    <p>🚀 Crafted with ❤️ by <strong>Ankit </strong></p>
+</footer>
+</div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
@@ -452,7 +484,7 @@
         function createFloatingHeart() {
             const heart = document.createElement('div');
             heart.className = 'floating-heart';
-            heart.innerHTML = '💗';
+            heart.innerHTML = '';
             heart.style.left = Math.random() * 100 + 'vw';
             document.body.appendChild(heart);
             
@@ -469,7 +501,7 @@
             // Send join notification to Firebase
             await db.collection('messages').add({
                 type: 'notification',
-                text: `${userName} joined the chat ❤️`,
+                text: `${userName} joined the chat 😄`,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
             
@@ -502,17 +534,17 @@
     const cancelLeaveBtn = document.getElementById('cancelLeave');
 
     // Show confirm dialog when leave button is clicked
-    leaveChatButton.addEventListener('click', () => {
+   /* leaveChatButton.addEventListener('click', () => {
         confirmDialog.style.display = 'flex';
         createFloatingHeart(); // Create some hearts for effect
-    });
+    });*/
 
     // Handle confirm leave
     confirmLeaveBtn.addEventListener('click', async () => {
         // Send leave notification to Firebase
         await db.collection('messages').add({
             type: 'notification',
-            text: `${userName} left the chat 💔`,
+            text: `${userName} left the chat 🥺`,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         
@@ -523,8 +555,8 @@
     cancelLeaveBtn.addEventListener('click', () => {
         confirmDialog.style.display = 'none';
         // Create a heart for staying
-        createFloatingHeart();
-        createFloatingHeart();
+        // createFloatingHeart();
+        // createFloatingHeart();
     });
 
     // Close dialog if clicked outside
@@ -558,9 +590,9 @@
                 messageContainer.scrollTop = messageContainer.scrollHeight;
                 
                
-                for(let i = 0; i < 3; i++) {
+               /* for(let i = 0; i < 3; i++) {
                     createFloatingHeart();
-                }
+                }*/
             } catch (error) {
                 alert('Error sending message: ' + error.message);
                 console.error('Error sending message:', error);
@@ -587,7 +619,7 @@
                                 message.userName === userName ? 'sent' : 'received'
                             }`;
                             messageElement.innerHTML = `
-                                <span class="message-name">${message.userName}</span>
+                                <span class="message-name">${message.userName}:</span>
                                 <div class="message-text">${message.text}</div>
                             `;
                             messageContainer.appendChild(messageElement);
