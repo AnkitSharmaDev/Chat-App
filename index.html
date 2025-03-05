@@ -405,6 +405,20 @@ footer strong {
     100% { text-shadow: 0 0 10px #ff0, 0 0 20px #ff0; }
 }
 
+/*      updation */
+     .message-text {
+        white-space: pre-wrap; /* Preserves newlines and whitespace */
+        word-wrap: break-word; /* Ensures long lines wrap */
+    }
+     .message {
+        max-width: 70%;
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 20px;
+        position: relative;
+        animation: messagePopIn 0.3s ease-out;
+    }
+
 
     </style>
 </head>
@@ -653,6 +667,44 @@ footer strong {
                 }
             }
         });
+
+
+     // updation
+     function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function listenToMessages() {
+        db.collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot((snapshot) => {
+                messageContainer.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const message = doc.data();
+                    
+                    if (message.type === 'notification') {
+                        createNotification(message.text);
+                    } else {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${
+                            message.userName === userName ? 'sent' : 'received'
+                        }`;
+                        // Use escaped text to prevent XSS
+                        messageElement.innerHTML = `
+                            <span class="message-name">${escapeHtml(message.userName)}:</span>
+                            <div class="message-text">${escapeHtml(message.text)}</div>
+                        `;
+                        messageContainer.appendChild(messageElement);
+                    }
+                });
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            });
+    }
     </script>
 </body>
 </html>
