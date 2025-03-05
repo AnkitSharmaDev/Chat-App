@@ -759,13 +759,13 @@ footer strong {
      // more
 
      function escapeHtml(unsafe) {
-        return unsafe
-            .replace(/&/g, "&")
-            .replace(/</g, "<")
-            .replace(/>/g, ">")
-            .replace(/"/g, """)
-            .replace(/'/g, "'");
-    }
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")  // Fixed: Changed from """ to "&quot;"
+        .replace(/'/g, "&#039;");
+}
 
     function listenToMessages() {
         db.collection('messages')
