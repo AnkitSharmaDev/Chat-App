@@ -419,6 +419,55 @@ footer strong {
         animation: messagePopIn 0.3s ease-out;
     }
 
+/*      more  */
+     .message {
+        max-width: 70%;
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 20px;
+        position: relative;
+        animation: messagePopIn 0.3s ease-out;
+        overflow: visible; /* Ensure copy button isn't clipped */
+    }
+
+    .message-content {
+        white-space: pre-wrap; /* Preserves newlines and whitespace */
+        word-wrap: break-word;
+    }
+
+    .copy-button {
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        font-size: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        opacity: 0;
+    }
+
+    .message:hover .copy-button {
+        opacity: 1;
+    }
+
+    .copy-button:hover {
+        background: var(--secondary-color);
+        transform: scale(1.1);
+    }
+
+    .message-name {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
 
     </style>
 </head>
@@ -705,6 +754,64 @@ footer strong {
                 messageContainer.scrollTop = messageContainer.scrollHeight;
             });
     }
+
+
+     // more
+
+     function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&")
+            .replace(/</g, "<")
+            .replace(/>/g, ">")
+            .replace(/"/g, """)
+            .replace(/'/g, "'");
+    }
+
+    function listenToMessages() {
+        db.collection('messages')
+            .orderBy('timestamp')
+            .onSnapshot((snapshot) => {
+                messageContainer.innerHTML = '';
+                snapshot.forEach((doc) => {
+                    const message = doc.data();
+                    
+                    if (message.type === 'notification') {
+                        createNotification(message.text);
+                    } else {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = `message ${
+                            message.userName === userName ? 'sent' : 'received'
+                        }`;
+                        // Create message with copy button
+                        messageElement.innerHTML = `
+                            <button class="copy-button" title="Copy message">📋</button>
+                            <span class="message-name">${escapeHtml(message.userName)}:</span>
+                            <div class="message-content">${escapeHtml(message.text)}</div>
+                        `;
+                        
+                        // Add copy functionality
+                        const copyButton = messageElement.querySelector('.copy-button');
+                        copyButton.addEventListener('click', () => {
+                            // Copy the original text (unescaped) to preserve exact formatting
+                            navigator.clipboard.writeText(message.text)
+                                .then(() => {
+                                    // Optional: Add visual feedback
+                                    copyButton.textContent = '✓';
+                                    setTimeout(() => {
+                                        copyButton.textContent = '📋';
+                                    }, 1000);
+                                })
+                                .catch(err => console.error('Copy failed:', err));
+                        });
+                        
+                        messageContainer.appendChild(messageElement);
+                    }
+                });
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            });
+    }
+
+     
     </script>
 </body>
 </html>
